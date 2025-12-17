@@ -20,7 +20,9 @@ public class testCode extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor frontLeft;
+    private DcMotor revMotor;
     private ColorSensor colorDetector;
+
 
     private void hardwareMapping() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -28,6 +30,7 @@ public class testCode extends LinearOpMode {
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+        revMotor = hardwareMap.get(DcMotor.class, "revMotor");
         colorDetector = hardwareMap.get(ColorSensor.class, "colorDetector");
     }
 
@@ -143,11 +146,12 @@ public class testCode extends LinearOpMode {
 
     private void testMotor(){
         if (gamepad1.a) {
-            frontRight.setPower(50);
+            revMotor.setPower(50);
         } else if (gamepad1.b) {
-            frontRight.setPower(100);
+            revMotor.setPower(100);
         }
     }
+
 
     @Override
     public void runOpMode() throws InterruptedException {
