@@ -39,8 +39,14 @@ public class mainCodeCurrent extends LinearOpMode {
         imu.initialize(new IMU.Parameters(new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.UP, RevHubOrientationOnRobot.UsbFacingDirection.FORWARD)));
         imu.resetYaw();
 
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        //backRight.setDirection(DcMotor.Direction.REVERSE);
+        //frontRight.setDirection(DcMotor.Direction.REVERSE);
+
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
+        frontRight.setDirection(DcMotor.Direction.FORWARD);
+        backRight.setDirection(DcMotor.Direction.FORWARD);
+
 
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -63,6 +69,7 @@ public class mainCodeCurrent extends LinearOpMode {
         return Math.max(min, Math.min(max, value));
     }
 
+    /*
     private void chassisMovement(float y, float x, float t) {
         double botHeading;
         double rotX;
@@ -92,6 +99,44 @@ public class mainCodeCurrent extends LinearOpMode {
         frontRight.setPower(0.75 * frontRightPower);
         backRight.setPower(0.75 * backRightPower);
     }
+    */
+    private void chassisMovement(double y, double x, double rx) {
+
+        // Invert Y stick (FTC standard)
+        y = -y;
+
+        // Reset heading
+        if (gamepad1.start) {
+            imu.resetYaw();
+        }
+
+        // Get robot heading in radians
+        double botHeading = imu.getRobotYawPitchRollAngles()
+                .getYaw(AngleUnit.RADIANS);
+
+        // Rotate the movement direction for field-centric drive
+        double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+        double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
+
+        // Counteract imperfect strafing
+        rotX *= 1.1;
+
+        // Denominator ensures power stays within [-1, 1]
+        double denominator = Math.max(
+                Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1
+        );
+
+        double frontLeftPower  = (rotY + rotX + rx) / denominator;
+        double backLeftPower   = (rotY - rotX + rx) / denominator;
+        double frontRightPower = (rotY - rotX - rx) / denominator;
+        double backRightPower  = (rotY + rotX - rx) / denominator;
+
+        frontLeft.setPower(frontLeftPower);
+        backLeft.setPower(backLeftPower);
+        frontRight.setPower(frontRightPower);
+        backRight.setPower(backRightPower);
+    }
+
 
     private void printThings() {
         telemetry.addData("Color: ", colorDetection());
@@ -157,8 +202,16 @@ public class mainCodeCurrent extends LinearOpMode {
         while (opModeIsActive()) {
             
             //chassisMovement(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
+
+            chassisMovement(
+                    gamepad1.left_stick_y,
+                    gamepad1.left_stick_x,
+                    gamepad1.right_stick_x
+            );
+
+
             printThings();
-            testMotor();
+            //testMotor();
         }
     }
 }
