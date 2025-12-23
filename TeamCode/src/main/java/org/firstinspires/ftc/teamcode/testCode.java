@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.*;
 
 @TeleOp(name = "mainCodeCurrent")
 public class testCode extends LinearOpMode {
@@ -23,6 +24,7 @@ public class testCode extends LinearOpMode {
     private DcMotor revMotor;
     private ColorSensor colorDetector;
 
+    List<String> colors = new ArrayList<>();
 
     private void hardwareMapping() {
         imu = hardwareMap.get(IMU.class, "imu");
@@ -112,23 +114,13 @@ public class testCode extends LinearOpMode {
 
 
     private String colorDetection() {
-        String[] colors = {"Yellow", "Blue", "Red"};
+        String[] colors = {"Green", "Purple"};
         String color = "";
-        float ratioGreenOverRed = ((float)colorDetector.green() / colorDetector.red());
-        float ratioBlueOverRed = ((float)colorDetector.blue() / colorDetector.red());
 
-        if ((ratioGreenOverRed >= 1.1 && ratioGreenOverRed <= 2.0) &&
-                (ratioBlueOverRed >= 0.1 && ratioBlueOverRed <= 0.8)) {
-            color = colors[0]; // Yellow
-        }
-        if ((ratioGreenOverRed >= 1.5 && ratioGreenOverRed <= 2.7) &&
-                (ratioBlueOverRed >= 2.0 && ratioBlueOverRed <= 10.0)) {
-            color = colors[1]; // Blue
-        }
-        if ((ratioGreenOverRed >= 0.2 && ratioGreenOverRed <= 1) &&
-                (ratioBlueOverRed >= 0.1 && ratioBlueOverRed <= 0.8)) {
-            color = colors[2]; // Red
-        }
+        //float ratioGreenOverRed = ((float)colorDetector.green() / colorDetector.red());
+        //float ratioBlueOverRed = ((float)colorDetector.blue() / colorDetector.red());
+        
+
         return color;
     }
 
@@ -144,13 +136,9 @@ public class testCode extends LinearOpMode {
         chassisMovement(0,0, power);
     }
 
-    private void testMotor(){
-        if (gamepad1.a) {
-            revMotor.setPower(50);
-        } else if (gamepad1.b) {
-            revMotor.setPower(100);
-        }
-    }
+    private void color(){
+
+    };
 
 
     @Override
@@ -161,7 +149,6 @@ public class testCode extends LinearOpMode {
 
             //chassisMovement(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
             printThings();
-            testMotor();
 
         }
     }
