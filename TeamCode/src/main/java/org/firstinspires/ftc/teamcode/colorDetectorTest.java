@@ -99,7 +99,7 @@ public class colorDetectorTest extends LinearOpMode {
 
     private void initializeAndSetUp() {
        // colorDetector.enableLed(true);
-        
+
         hardwareMapping();
     }
 
