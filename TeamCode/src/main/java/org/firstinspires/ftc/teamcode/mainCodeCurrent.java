@@ -186,15 +186,6 @@ public class mainCodeCurrent extends LinearOpMode {
         chassisMovement(0,0, power);
     }
 
-    private void testMotor(){
-        if (gamepad1.a) {
-            frontRight.setPower(50);
-        } else if (gamepad1.b) {
-            frontRight.setPower(100);
-        }
-
-    }
-
     @Override
     public void runOpMode() throws InterruptedException {
         initializeAndSetUp();
@@ -202,9 +193,6 @@ public class mainCodeCurrent extends LinearOpMode {
         while (opModeIsActive()) {
             
             //chassisMovement(gamepad1.left_stick_y, -gamepad1.left_stick_x, -gamepad1.right_stick_x);
-
-            //GIDEON
-
 
             chassisMovement(
                     gamepad1.left_stick_y,
