@@ -14,6 +14,7 @@ public class colorDetectorTest extends LinearOpMode {
         colorDetector = hardwareMap.get(ColorSensor.class, "colorDetector");
     }
 
+    /*
     private String colorDetection() {
         int red = colorDetector.red();
         int green = colorDetector.green();
@@ -42,6 +43,46 @@ public class colorDetectorTest extends LinearOpMode {
         return "unknown";
 
     }
+    */
+    private String colorDetection() {
+        int red = colorDetector.red();
+        int green = colorDetector.green();
+        int blue = colorDetector.blue();
+
+        int total = red + green + blue;
+        if (total < 60) {
+            return "unknown";
+        }
+
+        double redRatio = (double) red / total;
+        double greenRatio = (double) green / total;
+        double blueRatio = (double) blue / total;
+
+        // Saturation check (reject white / gray)
+        double max = Math.max(redRatio, Math.max(greenRatio, blueRatio));
+        double min = Math.min(redRatio, Math.min(greenRatio, blueRatio));
+        double saturation = max - min;
+
+        if (saturation < 0.12) {
+            return "unknown";
+        }
+
+        // GREEN detection
+        if (greenRatio > 0.40 && greenRatio > redRatio && greenRatio > blueRatio) {
+            return "green";
+        }
+
+        // PURPLE detection (handles light purple)
+        boolean redBlueClose = Math.abs(redRatio - blueRatio) < 0.12;
+        boolean redBlueAboveGreen = redRatio > greenRatio * 0.9 && blueRatio > greenRatio * 0.9;
+
+        if (redBlueClose && redBlueAboveGreen) {
+            return "purple";
+        }
+
+        return "unknown";
+    }
+
 
     private void printThings() {
         telemetry.addData("R", colorDetector.red());
