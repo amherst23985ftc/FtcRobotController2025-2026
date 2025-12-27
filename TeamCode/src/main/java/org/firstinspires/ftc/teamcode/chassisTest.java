@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,18 +18,33 @@ public class chassisTest extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor backLeft;
     private DcMotor frontLeft;
+    private DcMotor intake;
+    private DcMotor sequencer;
+    private Servo flapServo;
+
+    private boolean intakeToggle = false;
+    private boolean sequencerToggle = false;
+
+    private double flapNorm = 0;
+    private double flapUp = 0.5;
 
     private void hardwareMapping() {
+
         imu = hardwareMap.get(IMU.class, "imu");
         backRight = hardwareMap.get(DcMotor.class, "backRight");
         frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         backLeft = hardwareMap.get(DcMotor.class, "backLeft");
         frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
 
+        intake = hardwareMap.get(DcMotor.class, "intake");
+        sequencer = hardwareMap.get(DcMotor.class, "sequencer");
+        flapServo = hardwareMap.get(Servo.class, "flap");
+
     }
 
     private void setupServos() {
         //set servos to init pos here
+        flapServo.setPosition(flapNorm);
     }
 
     private void setupChassis() {
@@ -40,7 +56,6 @@ public class chassisTest extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
 
-        //test
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -51,11 +66,18 @@ public class chassisTest extends LinearOpMode {
         frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
+
+        sequencer.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        sequencer.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     private void initializeAndSetUp() {
         hardwareMapping();
         setupChassis();
+        setupServos();
     }
 
 
@@ -81,7 +103,45 @@ public class chassisTest extends LinearOpMode {
 
     private void printThings() {
         telemetry.addData("Heading: ", imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("Sequencer: ", sequencer.getCurrentPosition());
         telemetry.update();
+    }
+
+
+    private void controls(){
+        //a = toggle intake (done)
+        //right trigger = shoot all balls
+        //dpad up = servo (done)
+        //dpad right = move drum right (done)
+        //dpad left = move drum left (done)
+
+
+        if (gamepad1.a){
+            intakeToggle = !intakeToggle;
+        }
+
+        if (gamepad1.dpad_up) {
+            flapServo.setPosition(flapUp);
+        } else {
+            flapServo.setPosition(flapNorm);
+        }
+
+        if (gamepad1.dpad_right) {
+            sequencer.setPower(0.5);
+        } else if (gamepad1.dpad_left) {
+            sequencer.setPower(-0.5);
+        }
+
+        if (gamepad1.right_trigger > 1){
+            //drum macro
+        }
+
+        if (intakeToggle){
+            intake.setPower(1);
+        } else{
+            intake.setPower(0);
+        }
+
     }
 
 
@@ -100,6 +160,7 @@ public class chassisTest extends LinearOpMode {
             );
 
             printThings();
+            controls();
         }
     }
 
