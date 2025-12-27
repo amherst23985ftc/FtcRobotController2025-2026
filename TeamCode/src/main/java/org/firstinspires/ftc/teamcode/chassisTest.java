@@ -130,6 +130,8 @@ public class chassisTest extends LinearOpMode {
             sequencer.setPower(0.5);
         } else if (gamepad1.dpad_left) {
             sequencer.setPower(-0.5);
+        } else{
+            sequencer.setPower(0);
         }
 
         if (gamepad1.right_trigger > 1){
