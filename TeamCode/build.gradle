@@ -25,4 +25,9 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation 'com.acmerobotics:road-runner-core:0.10.0'
+    implementation 'com.acmerobotics:road-runner-quickstart:0.10.0'
+
+    implementation project(':roadrunner')
 }
+
